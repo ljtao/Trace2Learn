@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World!</string>
+    <string name="app_name">TouchPaint</string>
+    <string name="formal_name">Trace2Learn</string>
+    <string name="title_save">Save</string>
+
+</resources>
