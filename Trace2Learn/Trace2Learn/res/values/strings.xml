@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World!</string>
+    <string name="app_name">TouchPaint</string>
+    <string name="formal_name">Trace2Learn</string>
+    <string name="save_button_title">Save</string>
+    <string name="save_popup_title">Save Character</string>
+    <string name="save_popup_prompt">To save this character to the database, type the character name and click Yes.</string>
+
+</resources>
