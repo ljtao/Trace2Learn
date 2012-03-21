@@ -51,7 +51,7 @@ public class Main extends Activity {
     private Button traceButton;
     private Button charactersButton;
     
-	public CharactersDataSource datasource;
+	//public CharactersDataSource datasource;
 
     
     @Override protected void onCreate(Bundle savedInstanceState) {

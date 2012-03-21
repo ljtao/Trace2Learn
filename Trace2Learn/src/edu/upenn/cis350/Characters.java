@@ -25,6 +25,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -48,6 +49,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 //Need the following import to get access to the app resources, since this
@@ -67,7 +69,10 @@ public class Characters extends Activity {
     ListView lv;
     
     private Button backButton;
-    private CharactersDataSource datasource;
+    //private CharactersDataSource datasource;
+    
+    private CharDbAdapter mDbHelper;
+    
     
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,28 +80,32 @@ public class Characters extends Activity {
         setContentView(R.layout.characters); 
         
         backButton = (Button)this.findViewById(R.id.back2);
+        
+        mDbHelper = new CharDbAdapter(this);
+        mDbHelper.open();
 
         lv = (ListView)findViewById(R.id.list);
         //ArrayList<UserCharacter> charList = TouchPaint.db;
         ArrayList<String> charStringList = new ArrayList<String>();
+        
+        fillData();
        // for (UserCharacter uc : charList) {
         //	charStringList.add(uc.getChar());
         //}
        //charStringList.add("blah1");
        //charStringList.add("blah2");
        //charStringList.add("blah3");
-        datasource = new CharactersDataSource(this);
-		datasource.open();
+        //datasource = new CharactersDataSource(this);
+		//datasource.open();
         
-       List<UserCharacter> temp = datasource.getAllCharacters();
-       for(int i = 0; i < temp.size(); i++){
-    	   charStringList.add(temp.get(i).getName());
-       }
+       //List<UserCharacter> temp = datasource.getAllCharacters();
+       //for(int i = 0; i < temp.size(); i++){
+    	//   charStringList.add(temp.get(i).getName());
+       //}
         
         
         
-       ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String> (this, android.R.layout.simple_list_item_1, charStringList);
-       lv.setAdapter(arrayAdapter);
+
   
         backButton.setOnClickListener(new OnClickListener() {
             
@@ -112,9 +121,19 @@ public class Characters extends Activity {
     
 
 
-   
+    private void fillData() {
+        // Get all of the notes from the database and create the item list
+        Cursor c = mDbHelper.fetchAllChars();
+        startManagingCursor(c);
 
-  
+        String[] from = new String[] { CharDbAdapter.KEY_NAME };
+        int[] to = new int[] { R.id.list };
+        
+        // Now create an array adapter and set it to display using our row
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String> (this, android.R.layout.simple_list_item_1, from);
+        lv.setAdapter(arrayAdapter);
+        
+    }
     
 
     

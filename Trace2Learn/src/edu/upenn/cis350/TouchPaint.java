@@ -83,13 +83,23 @@ public class TouchPaint extends GraphicsActivity {
     /** Is fading mode enabled? */
     boolean mFading;
     
-	public CharactersDataSource datasource;
+    
+    //private CharacterOpenHelper opener;
+	//public CharactersDataSource datasource;
 
+	
+	private CharDbAdapter mDbHelper;
     
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.trace); 
+        
+        mDbHelper = new CharDbAdapter(this);
+        mDbHelper.open();
+        mDbHelper.createChar("testname123", "tags,tags,tags123", "testfile.file123");
+        
+        
         mView = (TtlView)this.findViewById(R.id.touchpaint);
         saveButton = (Button)this.findViewById(R.id.save);
         backButton = (Button)this.findViewById(R.id.back);
@@ -99,8 +109,8 @@ public class TouchPaint extends GraphicsActivity {
         
         //db = new ArrayList<UserCharacter>();
         
-        datasource = new CharactersDataSource(this);
-		datasource.open();
+       // datasource = new CharactersDataSource(this);
+		//datasource.open();
         
         mView.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.FILL_PARENT,
@@ -230,6 +240,10 @@ public class TouchPaint extends GraphicsActivity {
     		return display.getHeight();
     }
     
+    public void createChar(String name, String tags, String fname) {
+    	mDbHelper.createChar(name, "", fname);
+    }
+    
     public void savePopUp(int title,int message ){
         final EditText input = new EditText(this);
         final AlertDialog.Builder ad = new AlertDialog.Builder(this);
@@ -246,7 +260,9 @@ public class TouchPaint extends GraphicsActivity {
 					fos = openFileOutput(fname, Context.MODE_PRIVATE);
 	            	b.compress(Bitmap.CompressFormat.PNG, 100, fos);
 	        		fos.close();
-	        		datasource.createCharacter(value, fname, null);
+	        		createChar(value, "", fname);
+	        		
+	        		//datasource.createCharacter(value, fname, null);
 	        		////
 	        		
 				} catch (Exception e) {
