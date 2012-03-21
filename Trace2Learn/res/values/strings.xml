@@ -4,6 +4,13 @@
     <string name="hello">Hello World!</string>
     <string name="app_name">TouchPaint</string>
     <string name="formal_name">Trace2Learn</string>
-    <string name="title_save">Save</string>
+    <string name="trace_name">Trace2Learn</string>
+    <string name="save_button_title">Save</string>
+    <string name="save_popup_title">Save Character</string>
+    <string name="save_popup_prompt">To save this character to the database, type the character name and click Yes.</string>
+    <string name="characters_button_title">Characters</string>
+    <string name="trace_button_title">Trace</string>
+    <string name="back_button_title">Back</string>
+    <string name="clear_button_title">Clear</string>
 
 </resources>

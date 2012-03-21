@@ -15,8 +15,17 @@
  */
 
 package edu.upenn.cis350;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -24,12 +33,23 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
 //Need the following import to get access to the app resources, since this
 //class is in a sub-package.
@@ -53,36 +73,67 @@ public class TouchPaint extends GraphicsActivity {
     
     /** Other elements on Screen */
     private Button saveButton;
-    
+    private Button backButton;
+    private Button clearButton;
     
     /** The view responsible for drawing the window. */
-    MyView mView;
+    TtlView mView;
+    ScrollView master_view;
+    LinearLayout primary_layout;
     /** Is fading mode enabled? */
     boolean mFading;
     
+	public CharactersDataSource datasource;
+
+    
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        
 
-        
-        
-        // Create and attach the view that is responsible for painting.
-        /*this.saveButton = (Button )this.findViewById(R.id.save);
-        this.saveButton.setOnClickListener(new OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            finish();	//TODO: save
-          }
-        });*/
-        mView = new MyView(this);
-        setContentView(mView);          
-        mView.requestFocus();
+        setContentView(R.layout.trace); 
+        mView = (TtlView)this.findViewById(R.id.touchpaint);
+        saveButton = (Button)this.findViewById(R.id.save);
+        backButton = (Button)this.findViewById(R.id.back);
+        clearButton = (Button)this.findViewById(R.id.clear);
 
+        //TODO: Clear button and listeneter
         
-        // Restore the fading option if we are being thawed from a
-        // previously saved state.  Note that we are not currently remembering
-        // the contents of the bitmap.
+        //db = new ArrayList<UserCharacter>();
+        
+        datasource = new CharactersDataSource(this);
+		datasource.open();
+        
+        mView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.FILL_PARENT,
+                (getDisplayHeight()/4)*3));
+        
+        saveButton.setOnClickListener(new OnClickListener() {
+            
+            public void onClick(View v) {
+            	savePopUp(R.string.save_popup_title, R.string.save_popup_prompt);
+
+            }
+          });
+        
+        backButton.setOnClickListener(new OnClickListener() {
+            
+            public void onClick(View v) {
+           	 Intent myIntent = new Intent(v.getContext(), Main.class);
+             startActivityForResult(myIntent, 0);
+
+            }
+          });
+        
+        clearButton.setOnClickListener(new OnClickListener() {
+            
+            public void onClick(View v) {
+           	 mView.clear();
+
+            }
+          });
+          
+         
+          
+       
         mFading = savedInstanceState != null ? savedInstanceState.getBoolean("fading", true) : true;
     }
     
@@ -120,7 +171,8 @@ public class TouchPaint extends GraphicsActivity {
         // If fading mode is enabled, then as long as we are resumed we want
         // to run pulse to fade the contents.
         if (mFading) {
-            startFading();
+            //startFading();
+        	//uncomment to enable fading
         }
     }
 
@@ -173,136 +225,55 @@ public class TouchPaint extends GraphicsActivity {
         }
     };
     
-    public class MyView extends View {
-        private static final int FADE_ALPHA = 0x06;
-        private static final int MAX_FADE_STEPS = 256/FADE_ALPHA + 4;
-        private static final int TRACKBALL_SCALE = 10;
-
-        private Bitmap mBitmap;
-        private Canvas mCanvas;
-        private final Rect mRect = new Rect();
-        private final Paint mPaint;
-        private final Paint mFadePaint;
-        private float mCurX;
-        private float mCurY;
-        private int mFadeSteps = MAX_FADE_STEPS;
-        
-        public MyView(Context c) {
-            super(c);
-            setFocusable(true);
-            mPaint = new Paint();
-            mPaint.setAntiAlias(true);
-            mPaint.setARGB(255, 255, 255, 255);
-            mFadePaint = new Paint();
-            mFadePaint.setDither(true);
-            mFadePaint.setARGB(FADE_ALPHA, 0, 0, 0);
-        }
-
-        public void clear() {
-            if (mCanvas != null) {
-                mPaint.setARGB(0xff, 0, 0, 0);
-                mCanvas.drawPaint(mPaint);
-                invalidate();
-                mFadeSteps = MAX_FADE_STEPS;
-            }
-        }
-        
-        public void fade() {
-            if (mCanvas != null && mFadeSteps < MAX_FADE_STEPS) {
-                mCanvas.drawPaint(mFadePaint);
-                invalidate();
-                mFadeSteps++;
-            }
-        }
-        
-        @Override protected void onSizeChanged(int w, int h, int oldw,
-                int oldh) {
-            int curW = mBitmap != null ? mBitmap.getWidth() : 0;
-            int curH = mBitmap != null ? mBitmap.getHeight() : 0;
-            if (curW >= w && curH >= h) {
-                return;
-            }
-            
-            if (curW < w) curW = w;
-            if (curH < h) curH = h;
-            
-            Bitmap newBitmap = Bitmap.createBitmap(curW, curH,
-                                                   Bitmap.Config.RGB_565);
-            Canvas newCanvas = new Canvas();
-            newCanvas.setBitmap(newBitmap);
-            if (mBitmap != null) {
-                newCanvas.drawBitmap(mBitmap, 0, 0, null);
-            }
-            mBitmap = newBitmap;
-            mCanvas = newCanvas;
-            mFadeSteps = MAX_FADE_STEPS;
-        }
-        
-        @Override protected void onDraw(Canvas canvas) {
-            if (mBitmap != null) {
-                canvas.drawBitmap(mBitmap, 0, 0, null);
-            }
-        }
-
-        @Override public boolean onTrackballEvent(MotionEvent event) {
-            int N = event.getHistorySize();
-            final float scaleX = event.getXPrecision() * TRACKBALL_SCALE;
-            final float scaleY = event.getYPrecision() * TRACKBALL_SCALE;
-            for (int i=0; i<N; i++) {
-                //Log.i("TouchPaint", "Intermediate trackball #" + i
-                //        + ": x=" + event.getHistoricalX(i)
-                //        + ", y=" + event.getHistoricalY(i));
-                mCurX += event.getHistoricalX(i) * scaleX;
-                mCurY += event.getHistoricalY(i) * scaleY;
-                drawPoint(mCurX, mCurY, 1.0f, 16.0f);
-            }
-            //Log.i("TouchPaint", "Trackball: x=" + event.getX()
-            //        + ", y=" + event.getY());
-            mCurX += event.getX() * scaleX;
-            mCurY += event.getY() * scaleY;
-            drawPoint(mCurX, mCurY, 1.0f, 16.0f);
-            return true;
-        }
-        
-        @Override public boolean onTouchEvent(MotionEvent event) {
-            int action = event.getActionMasked();
-            if (action != MotionEvent.ACTION_UP && action != MotionEvent.ACTION_CANCEL) {
-                int N = event.getHistorySize();
-                int P = event.getPointerCount();
-                for (int i = 0; i < N; i++) {
-                    for (int j = 0; j < P; j++) {
-                        mCurX = event.getHistoricalX(j, i);
-                        mCurY = event.getHistoricalY(j, i);
-                        drawPoint(mCurX, mCurY,
-                                event.getHistoricalPressure(j, i),
-                                event.getHistoricalTouchMajor(j, i));
-                    }
-                }
-                for (int j = 0; j < P; j++) {
-                    mCurX = event.getX(j);
-                    mCurY = event.getY(j);
-                    drawPoint(mCurX, mCurY, 100, event.getTouchMajor(j));
-                    //100 replaced event.getPressure(j)
-                }
-            }
-            return true;
-        }
-        
-        private void drawPoint(float x, float y, float pressure, float width) {
-            //Log.i("TouchPaint", "Drawing: " + x + "x" + y + " p="
-            //        + pressure + " width=" + width);
-            if (width < 1) width = 1;
-            if (mBitmap != null) {
-                float radius = width / 2;
-                int pressureLevel = (int)(pressure * 255);
-                mPaint.setARGB(pressureLevel, 255, 255, 255);
-                mCanvas.drawCircle(x, y, 5, mPaint);
-                //5 replaced "radius"
-                mRect.set((int) (x - radius - 2), (int) (y - radius - 2),
-                        (int) (x + radius + 2), (int) (y + radius + 2));
-                invalidate(mRect);
-            }
-            mFadeSteps = 0;
-        }
+    private int getDisplayHeight(){
+    	Display display = ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay(); 
+    		return display.getHeight();
     }
+    
+    public void savePopUp(int title,int message ){
+        final EditText input = new EditText(this);
+        final AlertDialog.Builder ad = new AlertDialog.Builder(this);
+        ad.setTitle( title );
+        ad.setMessage( message );
+        ad.setView(input);
+        ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface arg0, int arg1){
+            	Bitmap b = mView.getDrawingCache();
+            	String value = input.getText().toString().trim();
+            	FileOutputStream fos;
+				try {
+					String fname = value + ".png";
+					fos = openFileOutput(fname, Context.MODE_PRIVATE);
+	            	b.compress(Bitmap.CompressFormat.PNG, 100, fos);
+	        		fos.close();
+	        		datasource.createCharacter(value, fname, null);
+	        		////
+	        		
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+        		
+            	//UserCharacter uc = new UserCharacter(b, value);            	
+            	//add to "database"           	
+            	//db.add(uc);
+            	
+            	
+            	mView.clear();
+            	
+            }
+        });
+        ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface arg0, int arg1) {
+                //nothing
+            }
+
+			public void onClick(View arg0) {
+				
+			}
+        }).show();
+    }
+
 }
