@@ -241,7 +241,8 @@ public class TouchPaint extends GraphicsActivity {
     }
     
     public void createChar(String name, String tags, String fname) {
-    	mDbHelper.createChar(name, "", fname);
+    	Intent i = new Intent(this, TouchPaint.class);
+        startActivityForResult(i, 1);
     }
     
     public void savePopUp(int title,int message ){
@@ -252,15 +253,20 @@ public class TouchPaint extends GraphicsActivity {
         ad.setView(input);
         ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1){
+            	
             	Bitmap b = mView.getDrawingCache();
             	String value = input.getText().toString().trim();
             	FileOutputStream fos;
 				try {
 					String fname = value + ".png";
+					mDbHelper.createChar(value, "", fname);
 					fos = openFileOutput(fname, Context.MODE_PRIVATE);
 	            	b.compress(Bitmap.CompressFormat.PNG, 100, fos);
 	        		fos.close();
-	        		createChar(value, "", fname);
+	        		
+	        		
+	        		
+	        		
 	        		
 	        		//datasource.createCharacter(value, fname, null);
 	        		////
@@ -290,6 +296,32 @@ public class TouchPaint extends GraphicsActivity {
 				
 			}
         }).show();
+    }
+    
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        Bundle extras = intent.getExtras();
+        switch(requestCode) {
+            case 1:
+                String name = extras.getString(CharDbAdapter.KEY_NAME);
+                String tags = extras.getString(CharDbAdapter.KEY_TAGS);
+                String file = extras.getString(CharDbAdapter.KEY_FILE);
+                mDbHelper.createChar(name, tags, file);
+                
+                break;
+            /*case ACTIVITY_EDIT:
+                Long rowId = extras.getLong(NotesDbAdapter.KEY_ROWID);
+                if (rowId != null) {
+                    String editTitle = extras.getString(NotesDbAdapter.KEY_TITLE);
+                    String editBody = extras.getString(NotesDbAdapter.KEY_BODY);
+                    mDbHelper.updateNote(rowId, editTitle, editBody);
+                }
+                fillData();
+                break;
+                */
+        }
     }
 
 }
