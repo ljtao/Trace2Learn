@@ -126,12 +126,16 @@ public class Characters extends Activity {
         Cursor c = mDbHelper.fetchAllChars();
         startManagingCursor(c);
 
-        String[] from = new String[] { CharDbAdapter.KEY_NAME };
-        int[] to = new int[] { R.id.list };
+        String[] from = new String[] {CharDbAdapter.KEY_FILE, CharDbAdapter.KEY_NAME };
+        int[] to = new int[] {R.id.icon, R.id.text1 };
+       
         
         // Now create an array adapter and set it to display using our row
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String> (this, android.R.layout.simple_list_item_1, from);
-        lv.setAdapter(arrayAdapter);
+        SimpleCursorAdapter notes =
+            new SimpleCursorAdapter(this, R.layout.char_row, c, from, to);
+       
+        
+        lv.setAdapter(notes);
         
     }
     
