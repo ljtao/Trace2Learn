@@ -97,7 +97,7 @@ public class TouchPaint extends GraphicsActivity {
         
         mDbHelper = new CharDbAdapter(this);
         mDbHelper.open();
-        mDbHelper.createChar("testname123", "tags,tags,tags123", "testfile.file123");
+        //mDbHelper.createChar("testname123", "tags,tags,tags123", "testfile.file123");
         
         
         mView = (TtlView)this.findViewById(R.id.touchpaint);
@@ -254,6 +254,7 @@ public class TouchPaint extends GraphicsActivity {
         ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1){
             	
+            	mView.setDrawingCacheEnabled(true);
             	Bitmap b = mView.getDrawingCache();
             	String value = input.getText().toString().trim();
             	FileOutputStream fos;
@@ -263,13 +264,6 @@ public class TouchPaint extends GraphicsActivity {
 					fos = openFileOutput(fname, Context.MODE_PRIVATE);
 	            	b.compress(Bitmap.CompressFormat.PNG, 100, fos);
 	        		fos.close();
-	        		
-	        		
-	        		
-	        		
-	        		
-	        		//datasource.createCharacter(value, fname, null);
-	        		////
 	        		
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
