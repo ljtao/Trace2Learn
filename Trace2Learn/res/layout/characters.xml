@@ -2,12 +2,19 @@
 	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:orientation="vertical" >	    
+	    android:orientation="vertical" >	
+	    <EditText android:id="@+building_list/search_box" 
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:hint="search"
+        android:inputType="text"
+        android:maxLines="1"/>    
  	    <ListView 
  	        android:id="@+id/android:list" 
  	        android:layout_width="fill_parent"
 			android:layout_height="fill_parent" 
 			android:drawSelectorOnTop="false"
+			android:layout_marginTop="50dip"
 			android:layout_marginBottom="50dip" 
 			android:cacheColorHint="#00000000"/>
  	    <RelativeLayout android:id="@+id/ButtonLayout"

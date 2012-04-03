@@ -37,6 +37,8 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,6 +53,8 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -78,6 +82,8 @@ public class Characters extends ListActivity {
     private Button backButton;
     private EfficientAdapter adap;
     private static CharDbAdapter mDbHelper;
+    private EditText filterText = null;
+
     
     //private static String[] data = new String[] {CharDbAdapter.KEY_FILE, CharDbAdapter.KEY_NAME };
     private static String[] data;
@@ -91,19 +97,22 @@ public class Characters extends ListActivity {
         
         data = buildArray();
 
-
-        adap = new EfficientAdapter(this);
+        filterText = (EditText) findViewById(R.building_list.search_box);
+        filterText.addTextChangedListener(filterTextWatcher);
+        adap = new EfficientAdapter(this, 0);
         setListAdapter(adap);
        
-        
         backButton.setOnClickListener(new OnClickListener() {        
             public void onClick(View v) {
            	 Intent myIntent = new Intent(v.getContext(), Main.class);
              startActivityForResult(myIntent, 0);
             }
-        });
-          
-
+        });    
+              
+    }
+    
+    protected void onClose(){
+    	mDbHelper.close();
     }
     
     
@@ -117,42 +126,41 @@ public class Characters extends ListActivity {
     	
     }
     
-    private void fillData() {
-        // Get all of the notes from the database and create the item list
-        Cursor c = mDbHelper.fetchAllChars();
-        startManagingCursor(c);
+    private TextWatcher filterTextWatcher = new TextWatcher() {
 
-        String[] from = new String[] {CharDbAdapter.KEY_FILE, CharDbAdapter.KEY_NAME };
-        int[] to = new int[] {R.id.icon, R.id.text1 };
-       
-        
-        // Now create an array adapter and set it to display using our row
-        SimpleCursorAdapter notes =
-            new SimpleCursorAdapter(this, R.layout.char_row, c, from, to);        
-        lv.setAdapter(notes);
-        
-    }
+        public void afterTextChanged(Editable s) {
+        }
+
+        public void beforeTextChanged(CharSequence s, int start, int count,
+                int after) {
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before,
+                int count) {
+            adap.getFilter().filter(s);
+        }
+
+    };
     
-    private String pathToBMP(String filename){
-    	return "/files/" + filename;
-    }
-    
-    
-    
-    
-    
-    public static class EfficientAdapter extends BaseAdapter {
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		String item = (String) adap.getName(position);
+		Toast.makeText(this, item + " selected", Toast.LENGTH_LONG).show();
+	}
+      
+    public static class EfficientAdapter extends ArrayAdapter implements Filterable {
     	private LayoutInflater mInflater;
     	private Bitmap mIcon1;
     	private Context context;
     	 
-    	public EfficientAdapter(Context context) {
+    	public EfficientAdapter(Context context, int i) {
     	// Cache the LayoutInflate to avoid asking for a new one each time.
+    	super(context, i);
     	mInflater = LayoutInflater.from(context);
     	this.context = context;
     	}
-    	 
-    	/**
+
+		/**
     	* Make a view to hold each row.
     	*
     	* @see android.widget.ListAdapter#getView(int, android.view.View,
@@ -171,6 +179,8 @@ public class Characters extends ListActivity {
     	// by ListView is null.
     	if (convertView == null) {
     	convertView = mInflater.inflate(R.layout.char_row, null);
+    	//convertView.setClickable(true);
+    	//convertView.setOnClickListener(myClickListener);
     	 
     	// Creates a ViewHolder and store references to the two children
     	// views
@@ -208,7 +218,7 @@ public class Characters extends ListActivity {
     	ImageView iconLine;
     	Button buttonLine;
     	}
-
+    	  	 
     	 
     	@Override
     	public long getItemId(int position) {
@@ -221,12 +231,20 @@ public class Characters extends ListActivity {
     	// TODO Auto-generated method stub
     	return data.length;
     	}
-    	 
-    	@Override
-    	public Object getItem(int position) {
-    	// TODO Auto-generated method stub
-    	return data[position];
-    	}
+
+		
+		public String getName(int arg0) {  //TODO: customized implementation
+			Cursor c = mDbHelper.fetchChar(arg0+1);
+			return c.getString(3);			
+		}
+
+		@Override
+		public Filter getFilter() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+
     	 
     }
 }

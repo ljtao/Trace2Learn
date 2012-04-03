@@ -50,6 +50,7 @@ public class Main extends Activity {
 
     private Button traceButton;
     private Button charactersButton;
+    private Button wordsButton;
     
 	//public CharactersDataSource datasource;
 
@@ -62,6 +63,7 @@ public class Main extends Activity {
         //mView = (TtlView)this.findViewById(R.id.touchpaint);
         traceButton = (Button)this.findViewById(R.id.trace);
         charactersButton = (Button)this.findViewById(R.id.characters);
+        wordsButton = (Button)this.findViewById(R.id.words);
         
        // mView.setLayoutParams(new LinearLayout.LayoutParams(
        //         LinearLayout.LayoutParams.FILL_PARENT,
@@ -80,6 +82,15 @@ public class Main extends Activity {
             
             public void onClick(View v) {
             	 Intent myIntent = new Intent(v.getContext(), Characters.class);
+                 startActivityForResult(myIntent, 0);
+
+            }
+          });
+        
+        wordsButton.setOnClickListener(new OnClickListener() {
+            
+            public void onClick(View v) {
+            	 Intent myIntent = new Intent(v.getContext(), PhraseActivity.class);
                  startActivityForResult(myIntent, 0);
 
             }

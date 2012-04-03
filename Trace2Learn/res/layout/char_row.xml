@@ -7,9 +7,7 @@
         android:id="@+id/icon"
         android:layout_width="30px"
         android:layout_height="30px"
-        android:layout_marginLeft="2px"
-        android:layout_marginRight="2px"
-        android:layout_marginTop="2px"
+        android:layout_marginTop="5px"
         android:layout_alignParentLeft="true" 
         android:src="@drawable/ic_launcher"
          >

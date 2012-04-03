@@ -82,11 +82,6 @@ public class TouchPaint extends GraphicsActivity {
     LinearLayout primary_layout;
     /** Is fading mode enabled? */
     boolean mFading;
-    
-    
-    //private CharacterOpenHelper opener;
-	//public CharactersDataSource datasource;
-
 	
 	private CharDbAdapter mDbHelper;
     
@@ -97,6 +92,7 @@ public class TouchPaint extends GraphicsActivity {
         
         mDbHelper = new CharDbAdapter(this);
         mDbHelper.open();
+        
         //mDbHelper.createChar("testname123", "tags,tags,tags123", "testfile.file123");
         
         
