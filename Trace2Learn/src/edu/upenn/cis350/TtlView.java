@@ -1,5 +1,7 @@
 package edu.upenn.cis350;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -16,12 +18,85 @@ public class TtlView extends View {
 
     private Bitmap mBitmap;
     private Canvas mCanvas;
-    private final Rect mRect = new Rect();
+    //private final Rect mRect = new Rect();
     private final Paint mPaint;
-    private final Paint mFadePaint;
+    
+    private final float width = 8;
+
     private float mCurX;
     private float mCurY;
-    private int mFadeSteps = MAX_FADE_STEPS;
+    
+    private String paths = null;
+    
+    private ArrayList<Line> lineList;
+    
+    private Line curLine;
+    
+    public ArrayList<Line> getLineList() {
+    	return lineList;
+    }
+    
+    public String getLineListAsString() {
+    	String ret = "";
+    	boolean b = false;
+    	for (Line l : lineList) {
+    		if (b == true) {
+    			ret+="~";
+    		}
+    		b=true;
+    		ret += l.toString();
+    	}
+    	return ret;
+    }
+    
+    public ArrayList<Line> getLineListFromString(String input) {
+    	ArrayList<Line> list = new ArrayList<Line>();
+    	for (String s : input.split("\\~")) {
+    		Line l = new Line();
+    		for (String s2 : s.split("\\|")) {
+    			String sx = s2.split(",")[0];
+    			String sy = s2.split(",")[1];
+    			
+    			float x = Float.parseFloat(sx);
+    			float y = Float.parseFloat(sy);
+    			Point p = new Point(x,y);
+    			l.addPoint(p);
+    		}
+    		list.add(l);
+    	}
+    	
+    	
+    	return list;
+    	
+    }
+    
+    public void DrawFromString(String s) {
+    	
+    	ArrayList<Line> list = getLineListFromString(s);
+    	
+    	for (Line line : list) {
+    		
+    		Point prev = null;
+    		for (Point p : line.getPointList()) {
+    			drawPoint(p);
+    			if (prev != null) {
+    				
+    				drawLine(prev,p);
+    			}
+    			
+    			prev = p;
+    		}
+    		
+    	}
+    	
+    }
+    
+    public void tryDrawChar(String paths) {
+    	if (paths != null && !paths.equals("")) {
+    		this.DrawFromString(paths);
+    	}
+    }
+
     
     public TtlView(Context c) {
         super(c);
@@ -29,9 +104,10 @@ public class TtlView extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setARGB(255, 255, 255, 255);
-        mFadePaint = new Paint();
-        mFadePaint.setDither(true);
-        mFadePaint.setARGB(FADE_ALPHA, 0, 0, 0);
+
+        lineList = new ArrayList<Line>();
+        
+        
     }
     
     public TtlView(Context c, AttributeSet as) {
@@ -40,9 +116,9 @@ public class TtlView extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setARGB(255, 255, 255, 255);
-        mFadePaint = new Paint();
-        mFadePaint.setDither(true);
-        mFadePaint.setARGB(FADE_ALPHA, 0, 0, 0);
+        
+        lineList = new ArrayList<Line>();
+
     }
 
     public void clear() {
@@ -50,17 +126,17 @@ public class TtlView extends View {
             mPaint.setARGB(0xff, 0, 0, 0);
             mCanvas.drawPaint(mPaint);
             invalidate();
-            mFadeSteps = MAX_FADE_STEPS;
+            
+            lineList.clear();
+ 
         }
     }
     
-    public void fade() {
-        if (mCanvas != null && mFadeSteps < MAX_FADE_STEPS) {
-            mCanvas.drawPaint(mFadePaint);
-            invalidate();
-            mFadeSteps++;
-        }
+    public void setChar(String paths) {
+    	this.paths = paths;
+    	
     }
+    
     
     @Override protected void onSizeChanged(int w, int h, int oldw,
             int oldh) {
@@ -82,13 +158,14 @@ public class TtlView extends View {
         }
         mBitmap = newBitmap;
         mCanvas = newCanvas;
-        mFadeSteps = MAX_FADE_STEPS;
     }
     
     @Override protected void onDraw(Canvas canvas) {
         if (mBitmap != null) {
             canvas.drawBitmap(mBitmap, 0, 0, null);
         }
+        
+        tryDrawChar(paths);
     }
 
     @Override public boolean onTrackballEvent(MotionEvent event) {
@@ -101,54 +178,114 @@ public class TtlView extends View {
             //        + ", y=" + event.getHistoricalY(i));
             mCurX += event.getHistoricalX(i) * scaleX;
             mCurY += event.getHistoricalY(i) * scaleY;
-            drawPoint(mCurX, mCurY, 1.0f, 16.0f);
+            drawPoint(mCurX, mCurY);
         }
         //Log.i("TouchPaint", "Trackball: x=" + event.getX()
         //        + ", y=" + event.getY());
         mCurX += event.getX() * scaleX;
         mCurY += event.getY() * scaleY;
-        drawPoint(mCurX, mCurY, 1.0f, 16.0f);
+        drawPoint(mCurX, mCurY);
         return true;
     }
     
     @Override public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
+        if (action == MotionEvent.ACTION_DOWN) {
+        	curLine = new Line();
+
+            
+        	
+        }
+        
+        
+        if (action == MotionEvent.ACTION_UP) {
+        	lineList.add(curLine);
+        	
+        	
+        }
+        
         if (action != MotionEvent.ACTION_UP && action != MotionEvent.ACTION_CANCEL) {
             int N = event.getHistorySize();
-            int P = event.getPointerCount();
+//            int P = event.getPointerCount();
+//            P = 1;
+
+
+            
             for (int i = 0; i < N; i++) {
-                for (int j = 0; j < P; j++) {
-                    mCurX = event.getHistoricalX(j, i);
-                    mCurY = event.getHistoricalY(j, i);
-                    drawPoint(mCurX, mCurY,
-                            event.getHistoricalPressure(j, i),
-                            event.getHistoricalSize(j, i));
-                }
+
+                    mCurX = event.getHistoricalX(i);
+
+                    mCurY = event.getHistoricalY(i);
+
+                    Point p = new Point(mCurX, mCurY);
+                    
+                    if (curLine.getLastPoint() != null) {
+                    	drawLine(curLine.getLastPoint(), p);
+                    }
+                    
+                    drawPoint(p);
+                    
+                    curLine.addPoint(p);
+
             }
-            for (int j = 0; j < P; j++) {
-                mCurX = event.getX(j);
-                mCurY = event.getY(j);
-                drawPoint(mCurX, mCurY, 100, event.getHistoricalSize(j));
-                //100 replaced event.getPressure(j)
+            
+            
+            
+            Point p = new Point(event.getX(), event.getY());
+            drawPoint(p);
+            if (curLine.getLastPoint() != null) {
+            	drawLine(curLine.getLastPoint(), p);
             }
+            
+            curLine.addPoint(p);
+
+            
         }
         return true;
     }
     
-    private void drawPoint(float x, float y, float pressure, float width) {
-        //Log.i("TouchPaint", "Drawing: " + x + "x" + y + " p="
-        //        + pressure + " width=" + width);
-        if (width < 1) width = 1;
+    private void drawPoint(Point p) {
+    	drawPoint(p.getX(), p.getY());
+    }
+    
+    private void drawPoint(float x, float y) {
+        
         if (mBitmap != null) {
-            float radius = width / 2;
-            int pressureLevel = (int)(pressure * 255);
-            mPaint.setARGB(pressureLevel, 255, 255, 255);
-            mCanvas.drawCircle(x, y, 5, mPaint);
-            //5 replaced "radius"
-            mRect.set((int) (x - radius - 2), (int) (y - radius - 2),
-                    (int) (x + radius + 2), (int) (y + radius + 2));
-            invalidate(mRect);
+
+            mPaint.setARGB(255, 255, 255, 255);
+            
+            mCanvas.drawCircle(x, y, (float)(width/2), mPaint);
+
+            invalidate();
         }
-        mFadeSteps = 0;
+
+    }
+    
+    private void drawLine(Point p1, Point p2) {
+    	
+    	drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+    }
+    
+    public void testDraw() {
+    	drawLine(300,300,500,500);
+    }
+    
+    private void drawLine(float x1, float y1, float x2, float y2) {
+
+
+        if (mBitmap != null) {
+
+            mPaint.setARGB(255, 255, 255, 255);
+            mPaint.setStrokeWidth(width);
+            //mPaint.setStrokeJoin(Paint.Join.ROUND);
+            //mPaint.setStrokeMiter(999);
+            mPaint.setStrokeCap(Paint.Cap.ROUND);
+            mCanvas.drawLine(x1, y1, x2, y2, mPaint);
+            
+
+
+            invalidate();
+        }
+
     }
 }

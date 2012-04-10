@@ -19,15 +19,30 @@
 			android:cacheColorHint="#00000000"/>
  	    <RelativeLayout android:id="@+id/ButtonLayout"
    		    android:layout_centerHorizontal="true" 
-   		    android:layout_height="wrap_content"
+   		    android:layout_height="50dp"
     		android:baselineAligned="false" 
     		android:layout_alignParentBottom="true"
    			android:layout_width="fill_parent">
+   			
+ 	        
+ 	        	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="50dp"
+		android:orientation="horizontal"
+	 >
 		    <Button 
 			   	android:id="@+id/back2"
-			    android:layout_width="fill_parent"
-			    android:layout_height="50dp"
+			    android:layout_width="wrap_content"
+			    android:layout_height="fill_parent"
 			    android:text="@string/back_button_title"
-			    android:orientation="vertical"/>
+			    android:orientation="horizontal"/>
+		    
+		    	<Button 
+			   	android:id="@+id/drawChar"
+			    android:layout_width="wrap_content"
+			    android:layout_height="fill_parent"
+			    android:text="@string/drawChar_button_title"
+			    android:orientation="horizontal"/>
+		    	</LinearLayout>
 		</RelativeLayout>
 	</RelativeLayout>

@@ -18,20 +18,21 @@ public final class R {
     }
     public static final class id {
         public static final int ButtonLayout=0x7f050003;
-        public static final int back=0x7f05000d;
+        public static final int back=0x7f05000e;
         public static final int back2=0x7f050004;
-        public static final int back3=0x7f05000a;
-        public static final int characters=0x7f050006;
-        public static final int clear=0x7f05000e;
+        public static final int back3=0x7f05000b;
+        public static final int characters=0x7f050007;
+        public static final int clear=0x7f05000f;
+        public static final int drawChar=0x7f050005;
         public static final int icon=0x7f050000;
         public static final int label=0x7f050002;
-        public static final int phrase_finish=0x7f050009;
-        public static final int phraseview=0x7f050008;
-        public static final int save=0x7f05000c;
+        public static final int phrase_finish=0x7f05000a;
+        public static final int phraseview=0x7f050009;
+        public static final int save=0x7f05000d;
         public static final int text1=0x7f050001;
-        public static final int touchpaint=0x7f05000b;
-        public static final int trace=0x7f050005;
-        public static final int words=0x7f050007;
+        public static final int touchpaint=0x7f05000c;
+        public static final int trace=0x7f050006;
+        public static final int words=0x7f050008;
     }
     public static final class layout {
         public static final int char_row=0x7f030000;
@@ -46,6 +47,7 @@ public final class R {
         public static final int back_button_title=0x7f040009;
         public static final int characters_button_title=0x7f040007;
         public static final int clear_button_title=0x7f04000a;
+        public static final int drawChar_button_title=0x7f04000e;
         public static final int formal_name=0x7f040002;
         public static final int hello=0x7f040000;
         public static final int phrase_finish=0x7f04000c;

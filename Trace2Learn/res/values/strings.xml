@@ -15,5 +15,6 @@
     <string name="adder">Add Character to Phrase</string>
     <string name="phrase_finish">Add Phrase </string>
     <string name="words_button_title">Manage Phrases</string>
+    <string name="drawChar_button_title">Draw It!</string>
 
 </resources>

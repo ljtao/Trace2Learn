@@ -34,6 +34,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -80,9 +81,12 @@ public class Characters extends ListActivity {
     
     ListView lv;   
     private Button backButton;
+    private Button drawCharButton;
     private EfficientAdapter adap;
     private static CharDbAdapter mDbHelper;
     private EditText filterText = null;
+    
+    private String charToDraw;
 
     
     //private static String[] data = new String[] {CharDbAdapter.KEY_FILE, CharDbAdapter.KEY_NAME };
@@ -91,7 +95,8 @@ public class Characters extends ListActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.characters);                
-        backButton = (Button)this.findViewById(R.id.back2);   
+        backButton = (Button)this.findViewById(R.id.back2);
+        drawCharButton = (Button)this.findViewById(R.id.drawChar);   
         mDbHelper = new CharDbAdapter(this);
         mDbHelper.open();
         
@@ -108,6 +113,18 @@ public class Characters extends ListActivity {
              startActivityForResult(myIntent, 0);
             }
         });    
+        
+        drawCharButton.setOnClickListener(new OnClickListener() {        
+            public void onClick(View v) {
+            	if (charToDraw != null && charToDraw != "") {
+		           	 Intent myIntent = new Intent(v.getContext(), TouchPaint.class);
+		           	 
+		           	 myIntent.putExtra("charToDraw", charToDraw);
+		
+		             startActivityForResult(myIntent, 2);
+            	}
+            }
+        });  
               
     }
     
@@ -144,8 +161,11 @@ public class Characters extends ListActivity {
     
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		String item = (String) adap.getName(position);
-		Toast.makeText(this, item + " selected", Toast.LENGTH_LONG).show();
+		String name = (String) adap.getName(position);
+		
+		charToDraw = (String)adap.getRowID(position);
+		
+		Toast.makeText(this, name + " selected: " + charToDraw, Toast.LENGTH_SHORT).show();
 	}
       
     public static class EfficientAdapter extends ArrayAdapter implements Filterable {
@@ -235,7 +255,12 @@ public class Characters extends ListActivity {
 		
 		public String getName(int arg0) {  //TODO: customized implementation
 			Cursor c = mDbHelper.fetchChar(arg0+1);
-			return c.getString(3);			
+			return c.getString(1);			
+		}
+		
+		public String getRowID(int arg0) {  //TODO: customized implementation
+			Cursor c = mDbHelper.fetchChar(arg0+1);
+			return c.getString(0);			
 		}
 
 		@Override

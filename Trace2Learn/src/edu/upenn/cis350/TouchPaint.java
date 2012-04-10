@@ -26,6 +26,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -67,12 +68,17 @@ public class TouchPaint extends GraphicsActivity {
     private Button backButton;
     private Button clearButton;
     
+    private String  charToDraw = null;
+    
     /** The view responsible for drawing the window. */
     TtlView mView;
     ScrollView master_view;
     LinearLayout primary_layout;
     /** Is fading mode enabled? */
     boolean mFading;
+    
+    String paths;
+    
 	
 	private CharDbAdapter mDbHelper;
     
@@ -84,13 +90,45 @@ public class TouchPaint extends GraphicsActivity {
         mDbHelper = new CharDbAdapter(this);
         mDbHelper.open();
         
+        
+        
+
+        
+        Bundle extras = getIntent().getExtras();
+        if(extras !=null) {
+         charToDraw = extras.getString("charToDraw");
+         
+         long rowid = Long.parseLong(charToDraw);
+         Cursor c = mDbHelper.fetchChar(rowid);
+         paths = c.getString(4);
+         String name = c.getString(1);
+
+         String str;
+         
+         //str = "" + paths.split("\\~")[0].split("\\|")[0].split(",")[1];
+         //Toast.makeText(this, "attempting to draw", Toast.LENGTH_LONG).show();
+         
+         //mView.DrawFromString(paths);
+         
+         //mView.testDraw();
+         
+        }
+
+
+        
    
         
         
         mView = (TtlView)this.findViewById(R.id.touchpaint);
+        
+        mView.setChar(paths);
         saveButton = (Button)this.findViewById(R.id.save);
         backButton = (Button)this.findViewById(R.id.back);
         clearButton = (Button)this.findViewById(R.id.clear);
+        
+        
+        
+    
 
 
         
@@ -119,16 +157,22 @@ public class TouchPaint extends GraphicsActivity {
             
             public void onClick(View v) {
            	 mView.clear();
+            
 
             }
           });
           
          
+        
+
+        
+        
           
        
        
     }
     
+
 
 
 
@@ -154,12 +198,14 @@ public class TouchPaint extends GraphicsActivity {
             public void onClick(DialogInterface arg0, int arg1){
             	
             	mView.setDrawingCacheEnabled(true);
+            	String path = mView.getLineListAsString();
+            	
             	Bitmap b = mView.getDrawingCache();
             	String value = input.getText().toString().trim();
             	FileOutputStream fos;
 				try {
 					String fname = value + ".png";
-					mDbHelper.createChar(value, "", fname);
+					mDbHelper.createChar(value, "", fname, path);
 					fos = openFileOutput(fname, Context.MODE_PRIVATE);
 	            	b.compress(Bitmap.CompressFormat.PNG, 100, fos);
 	        		fos.close();
@@ -201,9 +247,13 @@ public class TouchPaint extends GraphicsActivity {
                 String name = extras.getString(CharDbAdapter.KEY_NAME);
                 String tags = extras.getString(CharDbAdapter.KEY_TAGS);
                 String file = extras.getString(CharDbAdapter.KEY_FILE);
-                mDbHelper.createChar(name, tags, file);
+                String path = extras.getString(CharDbAdapter.KEY_PATH);
+                mDbHelper.createChar(name, tags, file, path);
                 
                 break;
+            case 2:
+            	mView.testDraw();
+            	Toast.makeText(this, "test case 2", Toast.LENGTH_LONG).show();
             /*case ACTIVITY_EDIT:
                 Long rowId = extras.getLong(NotesDbAdapter.KEY_ROWID);
                 if (rowId != null) {

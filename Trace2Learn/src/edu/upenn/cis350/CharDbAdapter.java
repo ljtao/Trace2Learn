@@ -38,6 +38,7 @@ public class CharDbAdapter {
     public static final String KEY_NAME = "name";
     public static final String KEY_TAGS = "tags";
     public static final String KEY_FILE = "file";
+    public static final String KEY_PATH = "path";
     public static final String KEY_ROWID = "_id";
 
     private static final String TAG = "CharsDbAdapter";
@@ -49,7 +50,7 @@ public class CharDbAdapter {
      */
     private static final String DATABASE_CREATE =
         "create table chars (_id integer primary key autoincrement, "
-        + "name text not null, tags text, file text not null);";
+        + "name text not null, tags text, file text not null, path text not null);";
 
     private static final String DATABASE_NAME = "Trace2Learn";
     private static final String DATABASE_TABLE = "chars";
@@ -117,11 +118,12 @@ public class CharDbAdapter {
      * @param body the body of the note
      * @return rowId or -1 if failed
      */
-    public long createChar(String name, String tags, String file) {
+    public long createChar(String name, String tags, String file, String path) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_NAME, name);
         initialValues.put(KEY_TAGS, tags);
         initialValues.put(KEY_FILE, file);
+        initialValues.put(KEY_PATH, path);
 
         return mDb.insert(DATABASE_TABLE, null, initialValues);
         
@@ -147,7 +149,7 @@ public class CharDbAdapter {
     public Cursor fetchAllChars() {
 
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID,
-                KEY_NAME, KEY_TAGS, KEY_FILE}, null, null, null, null, null);
+                KEY_NAME, KEY_TAGS, KEY_FILE, KEY_PATH}, null, null, null, null, null);
         
     }
 
@@ -163,8 +165,23 @@ public class CharDbAdapter {
         Cursor mCursor =
 
             mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
-                    KEY_NAME, KEY_TAGS, KEY_FILE}, KEY_ROWID + "=" + rowId, null,
+                    KEY_NAME, KEY_TAGS, KEY_FILE, KEY_PATH}, KEY_ROWID + "=" + rowId, null,
                     null, null, null, null);
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        return mCursor;
+
+    }
+    
+    public Cursor fetchCharByName(String name) throws SQLException {
+
+        Cursor mCursor =
+
+            mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
+                    KEY_NAME, KEY_TAGS, KEY_FILE, KEY_PATH}, KEY_NAME + "=" + name, null,
+                    null, null, null, null);
+      
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
@@ -182,11 +199,12 @@ public class CharDbAdapter {
      * @param body value to set note body to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateChar(long rowId, String name, String tags, String file) {
+    public boolean updateChar(long rowId, String name, String tags, String file, String path) {
         ContentValues args = new ContentValues();
         args.put(KEY_NAME, name);
         args.put(KEY_TAGS, tags);
         args.put(KEY_FILE, file);
+        args.put(KEY_PATH, path);
 
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }

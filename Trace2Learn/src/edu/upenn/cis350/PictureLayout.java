@@ -114,23 +114,27 @@ public class PictureLayout extends ViewGroup {
         canvas.scale(sx, sy, w, h);
         canvas.drawPicture(mPicture);
         canvas.restore();
+        
     }
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
+    	/*
         super.dispatchDraw(mPicture.beginRecording(getWidth(), getHeight()));
         mPicture.endRecording();
-        
+        */
         int x = getWidth()/2;
         int y = getHeight()/2;
         
         if (false) {
             canvas.drawPicture(mPicture);
         } else {
+        	/*
             drawPict(canvas, 0, 0, x, y,  1,  1);
             drawPict(canvas, x, 0, x, y, -1,  1);
             drawPict(canvas, 0, y, x, y,  1, -1);
             drawPict(canvas, x, y, x, y, -1, -1);
+            */
         }
     }
 
