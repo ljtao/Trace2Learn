@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:orientation="vertical" >
+
+<edu.upenn.cis350.TtlView
+android:id="@+id/touchpaint"
+android:layout_width="fill_parent"
+android:layout_height="50dp"
+android:layout_weight="1"
+/>
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="50dp"
+		android:orientation="horizontal"
+	 >
+	
+		<Button android:id="@+id/prevchar"
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:text="@string/save_button_title"
+		android:orientation="horizontal"
+		/>
+		
+		<Button android:id="@+id/exitlesson"
+		android:layout_width="40dp"
+		android:layout_height="fill_parent"
+		android:text="@string/back_button_title"
+		android:orientation="horizontal"		
+		/>
+		<Button android:id="@+id/nextchar"
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:text="@string/nextchar"
+		android:orientation="horizontal"		
+		/>
+	</LinearLayout>
+
+</LinearLayout>

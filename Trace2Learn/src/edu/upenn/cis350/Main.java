@@ -51,6 +51,7 @@ public class Main extends Activity {
     private Button traceButton;
     private Button charactersButton;
     private Button wordsButton;
+    private Button lessonButton;
     
 	//public CharactersDataSource datasource;
 
@@ -64,6 +65,8 @@ public class Main extends Activity {
         traceButton = (Button)this.findViewById(R.id.trace);
         charactersButton = (Button)this.findViewById(R.id.characters);
         wordsButton = (Button)this.findViewById(R.id.words);
+        lessonButton = (Button)this.findViewById(R.id.lessons);
+        
         
        // mView.setLayoutParams(new LinearLayout.LayoutParams(
        //         LinearLayout.LayoutParams.FILL_PARENT,
@@ -91,6 +94,15 @@ public class Main extends Activity {
             
             public void onClick(View v) {
             	 Intent myIntent = new Intent(v.getContext(), PhraseActivity.class);
+                 startActivityForResult(myIntent, 0);
+
+            }
+          });
+        
+        lessonButton.setOnClickListener(new OnClickListener() {
+            
+            public void onClick(View v) {
+            	 Intent myIntent = new Intent(v.getContext(), TraceActivity.class);
                  startActivityForResult(myIntent, 0);
 
             }

@@ -105,13 +105,6 @@ public class TouchPaint extends GraphicsActivity {
 
          String str;
          
-         //str = "" + paths.split("\\~")[0].split("\\|")[0].split(",")[1];
-         //Toast.makeText(this, "attempting to draw", Toast.LENGTH_LONG).show();
-         
-         //mView.DrawFromString(paths);
-         
-         //mView.testDraw();
-         
         }
 
 

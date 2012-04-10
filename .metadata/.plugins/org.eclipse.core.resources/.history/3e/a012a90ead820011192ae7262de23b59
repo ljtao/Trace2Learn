@@ -1,0 +1,190 @@
+/*
+ * Copyright (C) 2007 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package edu.upenn.cis350;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+
+//Need the following import to get access to the app resources, since this
+//class is in a sub-package.
+
+
+/**
+ * Demonstrates the handling of touch screen and trackball events to
+ * implement a simple painting app.
+ */
+public class TouchPaint extends GraphicsActivity {
+
+    
+    /** Other elements on Screen */
+    private Button saveButton;
+    private Button backButton;
+    private Button clearButton;
+    
+    /** The view responsible for drawing the window. */
+    TtlView mView;
+    ScrollView master_view;
+    LinearLayout primary_layout;
+    /** Is fading mode enabled? */
+    boolean mFading;
+	
+	private CharDbAdapter mDbHelper;
+    
+    @Override protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.trace); 
+        
+        mDbHelper = new CharDbAdapter(this);
+        mDbHelper.open();
+        
+   
+        
+        
+        mView = (TtlView)this.findViewById(R.id.touchpaint);
+        saveButton = (Button)this.findViewById(R.id.save);
+        backButton = (Button)this.findViewById(R.id.back);
+        clearButton = (Button)this.findViewById(R.id.clear);
+
+
+        
+        mView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.FILL_PARENT,
+                (getDisplayHeight()/4)*3));
+        
+        saveButton.setOnClickListener(new OnClickListener() {
+            
+            public void onClick(View v) {
+            	savePopUp(R.string.save_popup_title, R.string.save_popup_prompt);
+
+            }
+          });
+        
+        backButton.setOnClickListener(new OnClickListener() {
+            
+            public void onClick(View v) {
+           	 Intent myIntent = new Intent(v.getContext(), Main.class);
+             startActivityForResult(myIntent, 0);
+
+            }
+          });
+        
+        clearButton.setOnClickListener(new OnClickListener() {
+            
+            public void onClick(View v) {
+           	 mView.clear();
+
+            }
+          });
+          
+         
+          
+       
+       
+    }
+    
+
+
+
+
+    
+    private int getDisplayHeight(){
+    	Display display = ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay(); 
+    		return display.getHeight();
+    }
+    
+    public void createChar(String name, String tags, String fname) {
+    	Intent i = new Intent(this, TouchPaint.class);
+        startActivityForResult(i, 1);
+    }
+    
+    public void savePopUp(int title,int message ){
+        final EditText input = new EditText(this);
+        final AlertDialog.Builder ad = new AlertDialog.Builder(this);
+        ad.setTitle( title );
+        ad.setMessage( message );
+        ad.setView(input);
+        ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface arg0, int arg1){
+            	
+            	mView.setDrawingCacheEnabled(true);
+            	Bitmap b = mView.getDrawingCache();
+            	String value = input.getText().toString().trim();
+            	FileOutputStream fos;
+				try {
+					String fname = value + ".png";
+					mDbHelper.createChar(value, "", fname);
+					fos = openFileOutput(fname, Context.MODE_PRIVATE);
+	            	b.compress(Bitmap.CompressFormat.PNG, 100, fos);
+	        		fos.close();
+	        		
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+        		
+            	//UserCharacter uc = new UserCharacter(b, value);            	
+            	//add to "database"           	
+            	//db.add(uc);
+            	
+            	
+            	mView.clear();
+            	
+            }
+        });
+        ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface arg0, int arg1) {
+                //nothing
+            }
+
+			public void onClick(View arg0) {
+				
+			}
+        }).show();
+    }
+    
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        Bundle extras = intent.getExtras();
+        switch(requestCode) {
+            case 1:
+                String name = extras.getString(CharDbAdapter.KEY_NAME);
+                String tags = extras.getString(CharDbAdapter.KEY_TAGS);
+                String file = extras.getString(CharDbAdapter.KEY_FILE);
+                mDbHelper.createChar(name, tags, file);
+                
+                break;
+            /*case ACTIVITY_EDIT:
+                Long rowId = extras.getLong(NotesDbAdapter.KEY_ROWID);
+                if (rowId != null) {
+                    String editTitle = extras.getString(NotesDbAdapter.KEY_TITLE);
+                    String editBody = extras.getString(NotesDbAdapter.KEY_BODY);
+                    mDbHelper.updateNote(rowId, editTitle, editBody);
+                }
+                fillData();
+                break;
+                */
+        }
+    }
+
+}

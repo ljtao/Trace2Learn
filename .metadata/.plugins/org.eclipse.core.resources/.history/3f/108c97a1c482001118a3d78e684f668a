@@ -1,0 +1,70 @@
+package edu.upenn.cis350;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class TraceActivity extends GraphicsActivity{
+	
+	private TtlView mView;
+	private Button backButton;
+	private TextView tv;
+	private String word;
+	private static CharDbAdapter mDbHelper;
+	private static WordDbAdapter wDbHelper;
+	
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.learning);
+        backButton = (Button)this.findViewById(R.id.exitlesson);
+        tv = (TextView)this.findViewById(R.id.word);
+        mView = (TtlView)this.findViewById(R.id.lessonspace);
+        
+        wDbHelper = new WordDbAdapter(this);
+        mDbHelper = new CharDbAdapter(this);
+        mDbHelper.open();
+        wDbHelper.open();
+        
+        word = wDbHelper.fetchWord(1).getString(1);
+        tv.setText(word);
+        
+        backButton.setOnClickListener(new OnClickListener() {            
+            public void onClick(View v) {
+           	 Intent myIntent = new Intent(v.getContext(), Main.class);
+             startActivityForResult(myIntent, 0);
+            }
+          });
+        
+        
+    }
+    
+    public class BitMapView extends View {
+    	Bitmap mBitmap = null;
+    	public BitMapView(Context context, Bitmap bm) {
+    	super(context);
+    	mBitmap = bm;
+    	}
+
+    	@Override
+    	protected void onDraw(Canvas canvas) {
+    	// called when view is drawn
+    	Paint paint = new Paint();
+    	paint.setFilterBitmap(true);
+    	// The image will be scaled so it will fill the width, and the
+    	// height will preserve the image’s aspect ration
+    	double aspectRatio = ((double) mBitmap.getWidth()) / mBitmap.getHeight();
+    	Rect dest = new Rect(0, 0, this.getWidth(),(int) (this.getHeight() / aspectRatio));
+    	canvas.drawBitmap(mBitmap, null, dest, paint);
+    	}
+    }
+
+
+}

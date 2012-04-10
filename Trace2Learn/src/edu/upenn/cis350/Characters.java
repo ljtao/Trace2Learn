@@ -222,7 +222,6 @@ public class Characters extends ListActivity {
     	String filename = c.getString(1);
     	
     	// Icons bound to the rows.
-    	//String fname = context.getFilesDir().getAbsolutePath()+ "/" + c.getString(3);
     	String fname = context.getFilesDir().getAbsolutePath()+ "/" + c.getString(3);
     	mIcon1 = BitmapFactory.decodeFile(fname);
     	 

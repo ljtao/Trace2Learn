@@ -16,5 +16,9 @@
     <string name="phrase_finish">Add Phrase </string>
     <string name="words_button_title">Manage Phrases</string>
     <string name="drawChar_button_title">Draw It!</string>
+    <string name="prevchar">prev</string>
+    <string name="nextchar">next</string>
+    <string name="exitlesson">Quit Lesson</string>
+    <string name="lesson_button_title">Start Lesson</string>
 
 </resources>

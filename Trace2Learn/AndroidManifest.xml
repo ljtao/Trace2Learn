@@ -26,6 +26,11 @@
             >
                       
         </activity>
+           <activity
+            android:name=".TraceActivity"
+            >
+                      
+        </activity>
         
          <activity
             android:name=".Main"

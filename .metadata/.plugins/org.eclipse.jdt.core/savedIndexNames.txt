@@ -1,0 +1,3 @@
+INDEX VERSION 1.126+/Users/sandtrap33/Documents/CIS/Trace2Learn/.metadata/.plugins/org.eclipse.jdt.core
+2028882436.index
+3238447867.index

@@ -11,6 +11,7 @@ public class UserCharacter {
 	private String imagepath;
 	private String letter;
 	private String tags;
+	private String path;
 	
 	public long getId() {
 		return id;
@@ -43,6 +44,14 @@ public class UserCharacter {
 	public void setTags(String tag){
 		//TODO: comma delimited string with tags
 		tags = tag;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 }

@@ -1,0 +1,80 @@
+package edu.upenn.cis350;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class TraceActivity extends GraphicsActivity{
+	
+	private BitmapView mView;
+	private Button backButton;
+	private TextView tv;
+	private String word;
+	private static CharDbAdapter mDbHelper;
+	private static WordDbAdapter wDbHelper;
+	
+	private static List<UserCharacter> charlist;
+	
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.learning);
+        backButton = (Button)this.findViewById(R.id.exitlesson);
+        tv = (TextView)this.findViewById(R.id.word);
+        mView = (BitmapView)this.findViewById(R.id.lessonspace);
+        
+        wDbHelper = new WordDbAdapter(this);
+        mDbHelper = new CharDbAdapter(this);
+        mDbHelper.open();
+        wDbHelper.open();
+        
+        charlist = buildList();
+        
+        word = wDbHelper.fetchWord(1).getString(1);
+        tv.setText(word);
+        
+        mView.setBMP(charlist.get(1).getImagePath());
+        
+        backButton.setOnClickListener(new OnClickListener() {            
+            public void onClick(View v) {
+           	 Intent myIntent = new Intent(v.getContext(), Main.class);
+             startActivityForResult(myIntent, 0);
+            }
+          });       
+    }
+    
+    private List<UserCharacter> buildList(){
+    	int count = mDbHelper.fetchAllChars().getCount();
+    	List<UserCharacter> output = new ArrayList<UserCharacter>();
+    	for(int i = 1; i<=count; i++){
+    		Cursor c = mDbHelper.fetchChar(i);
+			//output.add(c.getString(3));	
+    		UserCharacter uc = new UserCharacter();
+    		uc.setId(c.getInt(0));
+    		uc.setName(c.getString(1));
+    		uc.setTags(c.getString(2));
+    		uc.setImagePath(c.getString(3));
+    		//uc.setImagePath(b)
+    		output.add(uc);
+    	}
+    	return output;
+    	
+    }
+    
+    private String adjustPath(String path){
+    	return this.getFilesDir().getAbsolutePath() + "/" + path;
+    }
+    
+
+}
