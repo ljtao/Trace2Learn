@@ -60,16 +60,7 @@ import android.widget.Toast;
  * implement a simple painting app.
  */
 public class TouchPaint extends GraphicsActivity {
-    /** Used as a pulse to gradually fade the contents of the window. */
-    private static final int FADE_MSG = 1;
-    
-    /** Menu ID for the command to clear the window. */
-    private static final int CLEAR_ID = Menu.FIRST;
-    /** Menu ID for the command to toggle fading. */
-    private static final int FADE_ID = Menu.FIRST+1;
-    
-    /** How often to fade the contents of the window (in ms). */
-    private static final int FADE_DELAY = 100;
+
     
     /** Other elements on Screen */
     private Button saveButton;
@@ -93,7 +84,7 @@ public class TouchPaint extends GraphicsActivity {
         mDbHelper = new CharDbAdapter(this);
         mDbHelper.open();
         
-        //mDbHelper.createChar("testname123", "tags,tags,tags123", "testfile.file123");
+   
         
         
         mView = (TtlView)this.findViewById(R.id.touchpaint);
@@ -101,12 +92,7 @@ public class TouchPaint extends GraphicsActivity {
         backButton = (Button)this.findViewById(R.id.back);
         clearButton = (Button)this.findViewById(R.id.clear);
 
-        //TODO: Clear button and listeneter
-        
-        //db = new ArrayList<UserCharacter>();
-        
-       // datasource = new CharactersDataSource(this);
-		//datasource.open();
+
         
         mView.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.FILL_PARENT,
@@ -140,96 +126,13 @@ public class TouchPaint extends GraphicsActivity {
          
           
        
-        mFading = savedInstanceState != null ? savedInstanceState.getBoolean("fading", true) : true;
+       
     }
     
-    @Override public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, CLEAR_ID, 0, "Clear");
-        menu.add(0, FADE_ID, 0, "Fade").setCheckable(true);
-        return super.onCreateOptionsMenu(menu);
-    }
 
-    @Override public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(FADE_ID).setChecked(mFading);
-        return super.onPrepareOptionsMenu(menu);
-    }
 
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case CLEAR_ID:
-                mView.clear();
-                return true;
-            case FADE_ID:
-                mFading = !mFading;
-                if (mFading) {
-                    startFading();
-                } else {
-                    stopFading();
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
-    @Override protected void onResume() {
-        super.onResume();
-        // If fading mode is enabled, then as long as we are resumed we want
-        // to run pulse to fade the contents.
-        if (mFading) {
-            //startFading();
-        	//uncomment to enable fading
-        }
-    }
 
-    @Override protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // Save away the fading state to restore if needed later.  Note that
-        // we do not currently save the contents of the display.
-        outState.putBoolean("fading", mFading);
-    }
-
-    @Override protected void onPause() {
-        super.onPause();
-        // Make sure to never run the fading pulse while we are paused or
-        // stopped.
-        stopFading();
-    }
-
-    /**
-     * Start up the pulse to fade the screen, clearing any existing pulse to
-     * ensure that we don't have multiple pulses running at a time.
-     */
-    void startFading() {
-        mHandler.removeMessages(FADE_MSG);
-        mHandler.sendMessageDelayed(
-                mHandler.obtainMessage(FADE_MSG), FADE_DELAY);
-    }
-    
-    /**
-     * Stop the pulse to fade the screen.
-     */
-    void stopFading() {
-        mHandler.removeMessages(FADE_MSG);
-    }
-    
-    private Handler mHandler = new Handler() {
-        @Override public void handleMessage(Message msg) {
-            switch (msg.what) {
-                // Upon receiving the fade pulse, we have the view perform a
-                // fade and then enqueue a new message to pulse at the desired
-                // next time.
-                case FADE_MSG: {
-                    mView.fade();
-                    mHandler.sendMessageDelayed(
-                            mHandler.obtainMessage(FADE_MSG), FADE_DELAY);
-                    break;
-                }
-                default:
-                    super.handleMessage(msg);
-            }
-        }
-    };
     
     private int getDisplayHeight(){
     	Display display = ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay(); 

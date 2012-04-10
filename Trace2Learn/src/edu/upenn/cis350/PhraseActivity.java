@@ -41,6 +41,7 @@ public class PhraseActivity extends ListActivity {
 	ListView lv;
 	private ArrayList<Integer> currPhraseCache;
 	private TextView tv;
+	private Button saveButton;
 	
     private EfficientAdapter adap;
 	private static CharDbAdapter mDbHelper;
@@ -54,6 +55,7 @@ public class PhraseActivity extends ListActivity {
         setContentView(R.layout.phrase);
         currPhraseCache = new ArrayList<Integer>();
         backButton = (Button)this.findViewById(R.id.back3);
+        saveButton = (Button)this.findViewById(R.id.phrase_finish);
         tv = (TextView)this.findViewById(R.id.phraseview);
         
         wDbHelper = new WordDbAdapter(this);
@@ -73,6 +75,12 @@ public class PhraseActivity extends ListActivity {
              startActivityForResult(myIntent, 0);
             }
           });    
+        saveButton.setOnClickListener(new OnClickListener() {            
+            public void onClick(View v) {
+            	wDbHelper.createWord(tv.getText().toString(), "");
+            	tv.setText("");
+            }
+          });   
       
     }
 	
@@ -168,25 +176,21 @@ public class PhraseActivity extends ListActivity {
 			return c.getString(1);			
 		}
     	 
-    	@Override
     	public long getItemId(int position) {
     	// TODO Auto-generated method stub
     	return 0;
     	}
     	 
-    	@Override
     	public int getCount() {
     	// TODO Auto-generated method stub
     	return data.length;
     	}
 
-		@Override
 		public Object getItem(int arg0) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
-		@Override
 		public Filter getFilter() {
 			// TODO Auto-generated method stub
 			return null;

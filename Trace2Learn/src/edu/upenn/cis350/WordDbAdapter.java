@@ -117,7 +117,7 @@ public class WordDbAdapter {
      * @param body the body of the note
      * @return rowId or -1 if failed
      */
-    public long createChar(String name, String tags, String file) {
+    public long createWord(String name, String tags) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_NAME, name);
         initialValues.put(KEY_TAGS, tags);
@@ -133,7 +133,7 @@ public class WordDbAdapter {
      * @param rowId id of note to delete
      * @return true if deleted, false otherwise
      */
-    public boolean deleteChar(long rowId) {
+    public boolean deleteWord(long rowId) {
 
         return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
     }
@@ -143,7 +143,7 @@ public class WordDbAdapter {
      * 
      * @return Cursor over all notes
      */
-    public Cursor fetchAllChars() {
+    public Cursor fetchAllWords() {
 
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID,
                 KEY_NAME, KEY_TAGS}, null, null, null, null, null, null);
@@ -157,7 +157,7 @@ public class WordDbAdapter {
      * @return Cursor positioned to matching note, if found
      * @throws SQLException if note could not be found/retrieved
      */
-    public Cursor fetchChar(long rowId) throws SQLException {
+    public Cursor fetchWord(long rowId) throws SQLException {
 
         Cursor mCursor =
 
@@ -181,7 +181,7 @@ public class WordDbAdapter {
      * @param body value to set note body to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateChar(long rowId, String name, String tags) {
+    public boolean updateWord(long rowId, String name, String tags) {
         ContentValues args = new ContentValues();
         args.put(KEY_NAME, name);
         args.put(KEY_TAGS, tags);
