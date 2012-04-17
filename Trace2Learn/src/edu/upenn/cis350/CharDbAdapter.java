@@ -163,7 +163,6 @@ public class CharDbAdapter {
     public Cursor fetchChar(long rowId) throws SQLException {
 
         Cursor mCursor =
-
             mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
                     KEY_NAME, KEY_TAGS, KEY_FILE, KEY_PATH}, KEY_ROWID + "=" + rowId, null,
                     null, null, null, null);
@@ -179,7 +178,7 @@ public class CharDbAdapter {
         Cursor mCursor =
 
             mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
-                    KEY_NAME, KEY_TAGS, KEY_FILE, KEY_PATH}, KEY_NAME + "=" + name, null,
+                    KEY_NAME, KEY_TAGS, KEY_FILE, KEY_PATH}, KEY_NAME + "= '" + name + "'", null,
                     null, null, null, null);
       
         if (mCursor != null) {

@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 public class TraceActivity extends GraphicsActivity{
 	
-	private int temp = 1;	//hardcode one word only.
+	private int temp = 1;	//hardcode one word only.  Randomize for real later
 	
 	private TtlView mView;
 	private Button backButton;
@@ -32,7 +32,7 @@ public class TraceActivity extends GraphicsActivity{
 	private Canvas c;
 	
 	private static List<UserCharacter> charlist;
-	private char[] characterarray;
+	private static List<String> pathlist;
 	private int counter;
 	
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,19 +56,29 @@ public class TraceActivity extends GraphicsActivity{
         tv.setText(word);
         counter = 0;
         
+        pathlist = buildPathList(word);   
+        mView.setChar(pathlist.get(counter));
+
+        
+        
+        
+        /*
         String fullbmppath = adjustPath(charlist.get(1).getImagePath());
         //Bitmap bmp = BitmapFactory.decodeFile(fullbmppath);
         mView.DrawFromString(charlist.get(1).getPath());
         mView.onDraw(c);
+        */
+        
         
         prevButton.setOnClickListener(new OnClickListener() {            
-            public void onClick(View v) {
-            	if(counter > 1){
-                    word = wDbHelper.fetchWord(1).getString(counter);
-                    tv.setText(word);
-                    counter = 0;
-            	}
-            }
+        	public void onClick(View v) {
+        		if(counter > 0){
+        			counter--;
+        			mView.clear();
+        		
+        			mView.setChar(pathlist.get(counter));
+        		}
+        	}
           }); 
         
         backButton.setOnClickListener(new OnClickListener() {            
@@ -76,7 +86,18 @@ public class TraceActivity extends GraphicsActivity{
            	 Intent myIntent = new Intent(v.getContext(), Main.class);
              startActivityForResult(myIntent, 0);
             }
-          });       
+          }); 
+    
+        
+        nextButton.setOnClickListener(new OnClickListener() {      	
+        	  public void onClick(View v) {
+        		if(counter < pathlist.size()-1){
+        			counter++;
+        			mView.clear();
+        			mView.setChar(pathlist.get(counter));
+        		}
+        	}
+          });          
     }
     
     private List<UserCharacter> buildList(){
@@ -101,9 +122,22 @@ public class TraceActivity extends GraphicsActivity{
     	return this.getFilesDir().getAbsolutePath() + "/" + path;
     }
     
-    private char[] wordToLetterArray(String word){
-    	return word.toCharArray();
+    private List<String> buildPathList(String word){
+    	//given a randomized word in the lesson, build a list of the paths for each character
+    	String s = word;
+    	List<String> output = new ArrayList<String>();
+    	for(int i = 0; i < charlist.size(); i++){
+    		UserCharacter uc = charlist.get(i);
+    		if(s.startsWith(uc.getName())){
+    			//found character
+    			output.add(uc.getPath());
+    			int length = uc.getName().length();
+    			s = s.substring(length, s.length());
+    		}    		
+    	}
+    	return output;
     }
+
     
 
 }

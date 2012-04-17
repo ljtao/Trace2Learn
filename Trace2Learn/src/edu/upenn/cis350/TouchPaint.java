@@ -34,6 +34,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -67,9 +68,7 @@ public class TouchPaint extends GraphicsActivity {
     private Button saveButton;
     private Button backButton;
     private Button clearButton;
-    
-    private String  charToDraw = null;
-    
+        
     /** The view responsible for drawing the window. */
     TtlView mView;
     ScrollView master_view;
@@ -90,16 +89,13 @@ public class TouchPaint extends GraphicsActivity {
         mDbHelper = new CharDbAdapter(this);
         mDbHelper.open();
         
-        
-        
-
-        
         Bundle extras = getIntent().getExtras();
         if(extras !=null) {
-         charToDraw = extras.getString("charToDraw");
+         String ctd = extras.getString("charToDraw");
          
-         long rowid = Long.parseLong(charToDraw);
-         Cursor c = mDbHelper.fetchChar(rowid);
+       	 Log.d("extrasTP", ctd);		           	 
+         //String rowid = (charToDraw);
+         Cursor c = mDbHelper.fetchCharByName(ctd);
          paths = c.getString(4);
          String name = c.getString(1);
 
@@ -184,6 +180,7 @@ public class TouchPaint extends GraphicsActivity {
     public void savePopUp(int title,int message ){
         final EditText input = new EditText(this);
         final AlertDialog.Builder ad = new AlertDialog.Builder(this);
+        mDbHelper.open();
         ad.setTitle( title );
         ad.setMessage( message );
         ad.setView(input);
@@ -202,9 +199,11 @@ public class TouchPaint extends GraphicsActivity {
 					fos = openFileOutput(fname, Context.MODE_PRIVATE);
 	            	b.compress(Bitmap.CompressFormat.PNG, 100, fos);
 	        		fos.close();
+	        		mDbHelper.close();
 	        		
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
+					mDbHelper.close();
 					e.printStackTrace();
 				}
 
@@ -214,19 +213,17 @@ public class TouchPaint extends GraphicsActivity {
             	//add to "database"           	
             	//db.add(uc);
             	
-            	
             	mView.clear();
+            	mView.destroyDrawingCache();
+
             	
             }
         });
         ad.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1) {
-                //nothing
+                mDbHelper.close();  
             }
 
-			public void onClick(View arg0) {
-				
-			}
         }).show();
     }
     

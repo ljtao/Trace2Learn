@@ -80,7 +80,6 @@ public class TtlView extends View {
     		for (Point p : line.getPointList()) {
     			drawPoint(p);
     			if (prev != null) {
-    				
     				drawLine(prev,p);
     			}
     			
