@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical" >
+	    
+	    <Button android:id="@+id/trace"
+	    android:layout_width="fill_parent"
+	    android:layout_height="1dp"
+	    android:text="@string/trace_button_title"
+	    android:orientation="vertical"    
+	    android:layout_weight="1"
+	    
+	    />
+	    
+	    <Button android:id="@+id/characters"
+	    android:layout_width="fill_parent"
+	    android:layout_height="1dp"
+	    android:text="@string/characters_button_title"
+	    android:orientation="vertical"    
+	    android:layout_weight="1"
+	    
+	    />
+	    <Button
+	        android:id="@+id/words"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="0.66"
+	        android:text="@string/words_button_title" />
+
+	    <Button
+	        android:id="@+id/lessons"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1.00"
+	        android:text="@string/lesson_button_title" />
+	    
+	</LinearLayout>
