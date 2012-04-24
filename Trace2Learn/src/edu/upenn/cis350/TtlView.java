@@ -32,6 +32,9 @@ public class TtlView extends View {
     
     private Line curLine;
     
+    private boolean first_draw = true;
+    private boolean first_time = true;
+    
     public ArrayList<Line> getLineList() {
     	return lineList;
     }
@@ -71,22 +74,37 @@ public class TtlView extends View {
     }
     
     public void DrawFromString(String s) {
+    	if (first_time) {
+    		long startTime = System.currentTimeMillis();
+    		first_time = false;
+    	}
+    	long curTime = System.currentTimeMillis();
+    	
     	
     	ArrayList<Line> list = getLineListFromString(s);
+    	
+    	int numLines = list.size();
+    	
+    	int lineDrawTime = 600; //millisecs
+    	int timeBetweenLines = 400; //millisecs
+    	
+    	
     	
     	for (Line line : list) {
     		
     		Point prev = null;
     		for (Point p : line.getPointList()) {
-    			drawPoint(p);
+    			drawPoint(p, "blue");
     			if (prev != null) {
-    				drawLine(prev,p);
+    				drawLine(prev,p,"blue");
     			}
     			
     			prev = p;
     		}
     		
     	}
+    	
+    	first_draw = false;
     	
     }
     
@@ -160,11 +178,15 @@ public class TtlView extends View {
     }
     
     @Override protected void onDraw(Canvas canvas) {
+
+        if (first_draw) {
+        	tryDrawChar(paths);
+        	
+        }
+        
         if (mBitmap != null) {
             canvas.drawBitmap(mBitmap, 0, 0, null);
         }
-        
-        tryDrawChar(paths);
     }
 
     @Override public boolean onTrackballEvent(MotionEvent event) {
@@ -247,11 +269,28 @@ public class TtlView extends View {
     	drawPoint(p.getX(), p.getY());
     }
     
+    private void drawPoint(Point p, String color) {
+    	drawPoint(p.getX(), p.getY(), color);
+    }
+    
     private void drawPoint(float x, float y) {
+        
+    	drawPoint(x,y,"white");
+
+    }
+    
+    private void drawPoint(float x, float y, String color) {
+    	
+    	if (color.equals("white")) {
+            mPaint.setARGB(255, 255, 255, 255);
+    	}
+    	if (color.equals("blue")) {
+            mPaint.setARGB(255, 0, 0, 255);
+    	}
         
         if (mBitmap != null) {
 
-            mPaint.setARGB(255, 255, 255, 255);
+
             
             mCanvas.drawCircle(x, y, (float)(width/2), mPaint);
 
@@ -264,22 +303,41 @@ public class TtlView extends View {
     	
     	drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }
+    private void drawLine(Point p1, Point p2, String color) {
+    	drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY(), color);
+    }
+    
     
     public void testDraw() {
     	drawLine(300,300,500,500);
     }
     
     private void drawLine(float x1, float y1, float x2, float y2) {
+    	
+    	
+    	drawLine(x1,y1,x2,y2, "white");
+    	
+    }
+    
+    private void drawLine(float x1, float y1, float x2, float y2, String color ) {
 
+    	if (color.equals("white")) {
+    		mPaint.setARGB(255, 255, 255, 255);
+    	}
+    	if (color.equals("blue")) {
+    		mPaint.setARGB(255, 0, 0, 255);
+    		
+    	}
+    	
 
         if (mBitmap != null) {
 
-            mPaint.setARGB(255, 255, 255, 255);
+            
             mPaint.setStrokeWidth(width);
-            //mPaint.setStrokeJoin(Paint.Join.ROUND);
-            //mPaint.setStrokeMiter(999);
+
             mPaint.setStrokeCap(Paint.Cap.ROUND);
             mCanvas.drawLine(x1, y1, x2, y2, mPaint);
+
             
 
 
@@ -287,4 +345,5 @@ public class TtlView extends View {
         }
 
     }
+    
 }

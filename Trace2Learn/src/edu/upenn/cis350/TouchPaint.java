@@ -97,9 +97,9 @@ public class TouchPaint extends GraphicsActivity {
          //String rowid = (charToDraw);
          Cursor c = mDbHelper.fetchCharByName(ctd);
          paths = c.getString(4);
-         String name = c.getString(1);
 
-         String str;
+
+
          
         }
 
@@ -242,6 +242,7 @@ public class TouchPaint extends GraphicsActivity {
                 
                 break;
             case 2:
+            	// this code not used... - parker
             	mView.testDraw();
             	Toast.makeText(this, "test case 2", Toast.LENGTH_LONG).show();
             /*case ACTIVITY_EDIT:
