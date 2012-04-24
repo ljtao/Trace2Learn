@@ -29,12 +29,20 @@
 	        android:layout_height="wrap_content"
 	        android:layout_weight="0.66"
 	        android:text="@string/words_button_title" />
-
+	    <Button
+	        android:id="@+id/lessonbuilder"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="0.66"
+	        android:text="@string/lessonbuilder_button_title" 
+	    />
+	    
 	    <Button
 	        android:id="@+id/lessons"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_weight="1.00"
 	        android:text="@string/lesson_button_title" />
+	    
 	    
 	</LinearLayout>

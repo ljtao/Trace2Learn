@@ -20,5 +20,7 @@
     <string name="nextchar">next</string>
     <string name="exitlesson">Quit Lesson</string>
     <string name="lesson_button_title">Start Lesson</string>
+    <string name="lessonbuilder_button_title">Create Lesson</string>
+    <string name="lesson_finish">Add Lesson</string>
 
 </resources>

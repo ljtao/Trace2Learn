@@ -52,6 +52,7 @@ public class Main extends Activity {
     private Button charactersButton;
     private Button wordsButton;
     private Button lessonButton;
+    private Button createLessonButton;
     
 	//public CharactersDataSource datasource;
 
@@ -66,6 +67,7 @@ public class Main extends Activity {
         charactersButton = (Button)this.findViewById(R.id.characters);
         wordsButton = (Button)this.findViewById(R.id.words);
         lessonButton = (Button)this.findViewById(R.id.lessons);
+        createLessonButton = (Button)this.findViewById(R.id.lessonbuilder);
         
         
        // mView.setLayoutParams(new LinearLayout.LayoutParams(
@@ -90,6 +92,15 @@ public class Main extends Activity {
             }
           });
         
+        createLessonButton.setOnClickListener(new OnClickListener() {
+            
+            public void onClick(View v) {
+            	 Intent myIntent = new Intent(v.getContext(), LessonBuildActivity.class);
+                 startActivityForResult(myIntent, 0);
+
+            }
+          });
+        
         wordsButton.setOnClickListener(new OnClickListener() {
             
             public void onClick(View v) {
@@ -98,6 +109,8 @@ public class Main extends Activity {
 
             }
           });
+        
+        
         
         lessonButton.setOnClickListener(new OnClickListener() {
             
