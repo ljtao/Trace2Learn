@@ -35,6 +35,8 @@ public class TtlView extends View {
     private boolean first_draw = true;
     private boolean first_time = true;
     
+    private long startTime;
+    
     public ArrayList<Line> getLineList() {
     	return lineList;
     }
@@ -75,7 +77,7 @@ public class TtlView extends View {
     
     public void DrawFromString(String s) {
     	if (first_time) {
-    		long startTime = System.currentTimeMillis();
+    		startTime = System.currentTimeMillis();
     		first_time = false;
     	}
     	long curTime = System.currentTimeMillis();
@@ -89,22 +91,39 @@ public class TtlView extends View {
     	int timeBetweenLines = 400; //millisecs
     	
     	
+    	ArrayList<Long> timeList = new ArrayList<Long>();
+    	for (int i = 0; i < list.size(); i++) {
+    		if (i > 0) {
+    			timeList.add((long)(lineDrawTime + timeBetweenLines) + timeList.get(i-1));
+    		}
+    		else {
+    			timeList.add((long)(lineDrawTime + timeBetweenLines));
+    		}
+    	}
     	
+    	int count = 0;
     	for (Line line : list) {
     		
+    		
+    		int numPoints = line.getPointList().size();
+    		
     		Point prev = null;
+    		int pointcount = 0;
     		for (Point p : line.getPointList()) {
     			drawPoint(p, "blue");
     			if (prev != null) {
-    				drawLine(prev,p,"blue");
+    				if ((double)pointcount / (double) numPoints * (double) lineDrawTime + timeList.get(count) + startTime> System.currentTimeMillis()) {
+    					drawLine(prev,p,"blue");
+    				}
     			}
-    			
+    			pointcount++;
     			prev = p;
     		}
-    		
+    		count++;
     	}
-    	
-    	first_draw = false;
+    	if (System.currentTimeMillis() > startTime + timeList.get(timeList.size() -1)) {
+    		first_draw = false;
+    	}
     	
     }
     
@@ -151,6 +170,7 @@ public class TtlView extends View {
     
     public void setChar(String paths) {
     	this.paths = paths;
+    	this.first_draw = true;
     	
     }
     
