@@ -115,7 +115,7 @@ public class Main extends Activity {
         lessonButton.setOnClickListener(new OnClickListener() {
             
             public void onClick(View v) {
-            	 Intent myIntent = new Intent(v.getContext(), TraceActivity.class);
+            	 Intent myIntent = new Intent(v.getContext(), LessonSelectActivity.class);
                  startActivityForResult(myIntent, 0);
 
             }
