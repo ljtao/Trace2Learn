@@ -1,6 +1,7 @@
 package edu.upenn.cis350;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -29,9 +31,10 @@ public class TraceActivity extends GraphicsActivity{
 	private String word;
 	private static CharDbAdapter mDbHelper;
 	private static WordDbAdapter wDbHelper;
+	private static LessonDbAdapter lDbHelper;
 	private Canvas c;
 	
-	private static List<UserCharacter> charlist;
+	private static HashMap<String,UserCharacter> charmap;
 	private static List<String> pathlist;
 	private int counter;
 	
@@ -47,16 +50,22 @@ public class TraceActivity extends GraphicsActivity{
         
         wDbHelper = new WordDbAdapter(this);
         mDbHelper = new CharDbAdapter(this);
+        lDbHelper = new LessonDbAdapter(this);
         mDbHelper.open();
         wDbHelper.open();
+        lDbHelper.open();
         
-        charlist = buildList();
+        charmap = buildList();
         
-        word = wDbHelper.fetchWord(temp).getString(1);
-        tv.setText(word);
+        Bundle extras = getIntent().getExtras();
+        int lessonno = extras.getInt("lesson");
+        Log.d("whatis", "lessonno: " +lessonno);
+        Cursor c = lDbHelper.fetchLesson(lessonno+1);
+        String lesson_string = c.getString(1);
+        tv.setText(lesson_string);
         counter = 0;
         
-        pathlist = buildPathList(word);   
+        pathlist = buildPathList(lesson_string);   
         mView.setChar(pathlist.get(counter));
 
         
@@ -100,9 +109,10 @@ public class TraceActivity extends GraphicsActivity{
           });          
     }
     
-    private List<UserCharacter> buildList(){
+    private HashMap<String,UserCharacter> buildList(){
+    	
     	int count = mDbHelper.fetchAllChars().getCount();
-    	List<UserCharacter> output = new ArrayList<UserCharacter>();
+    	HashMap<String,UserCharacter> output = new HashMap<String,UserCharacter>();
     	for(int i = 1; i<=count; i++){
     		Cursor c = mDbHelper.fetchChar(i);
 			//output.add(c.getString(3));	
@@ -112,7 +122,8 @@ public class TraceActivity extends GraphicsActivity{
     		uc.setTags(c.getString(2));
     		uc.setImagePath(c.getString(3));
     		uc.setPath(c.getString(4));
-    		output.add(uc);
+    		//Log.d("test", "adding to charmap: " + uc.getName());
+    		output.put(uc.getName(), uc);
     	}
     	return output;
     	
@@ -126,14 +137,17 @@ public class TraceActivity extends GraphicsActivity{
     	//given a randomized word in the lesson, build a list of the paths for each character
     	String s = word;
     	List<String> output = new ArrayList<String>();
-    	for(int i = 0; i < charlist.size(); i++){
-    		UserCharacter uc = charlist.get(i);
-    		if(s.startsWith(uc.getName())){
-    			//found character
-    			output.add(uc.getPath());
-    			int length = uc.getName().length();
-    			s = s.substring(length, s.length());
-    		}    		
+    	while(s.length() > 0){
+			String check = Character.toString(s.charAt(0));
+
+    		if(charmap.containsKey(check)){
+    			Log.d("check", "adding a: " + s.charAt(0));
+    			output.add(charmap.get(check).getPath());
+    			s=s.substring(1);    			
+    		}
+    		else{
+    			s=s.substring(1);
+    		}
     	}
     	return output;
     }
