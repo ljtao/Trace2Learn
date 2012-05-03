@@ -136,6 +136,7 @@ public class TouchPaint extends GraphicsActivity {
         backButton.setOnClickListener(new OnClickListener() {
             
             public void onClick(View v) {
+            	mDbHelper.close();
            	 Intent myIntent = new Intent(v.getContext(), Main.class);
              startActivityForResult(myIntent, 0);
 
@@ -162,9 +163,15 @@ public class TouchPaint extends GraphicsActivity {
     }
     
 
+    protected void onDestroy() {
+    	mDbHelper.close();
+    	super.onDestroy();
+    	
+    }
 
-
-
+    protected void onClose(){
+    	mDbHelper.close();
+    }
 
     
     private int getDisplayHeight(){
@@ -180,7 +187,7 @@ public class TouchPaint extends GraphicsActivity {
     public void savePopUp(int title,int message ){
         final EditText input = new EditText(this);
         final AlertDialog.Builder ad = new AlertDialog.Builder(this);
-        mDbHelper.open();
+        //mDbHelper.open();
         ad.setTitle( title );
         ad.setMessage( message );
         ad.setView(input);

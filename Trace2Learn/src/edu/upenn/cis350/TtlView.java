@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -36,6 +37,8 @@ public class TtlView extends View {
     private boolean first_time = true;
     
     private long startTime;
+    
+    private int linesDrawn;
     
     public ArrayList<Line> getLineList() {
     	return lineList;
@@ -76,20 +79,32 @@ public class TtlView extends View {
     }
     
     public void DrawFromString(String s) {
+
+    	ArrayList<Line> list = getLineListFromString(s);
+    	boolean needToInv = true;
+    	int numLines = list.size();
+    	
     	if (first_time) {
     		startTime = System.currentTimeMillis();
     		first_time = false;
+    		linesDrawn = 0;
+    		
     	}
     	long curTime = System.currentTimeMillis();
     	
+    	long elapsed = curTime - startTime;
     	
-    	ArrayList<Line> list = getLineListFromString(s);
     	
-    	int numLines = list.size();
+    	if (linesDrawn > 0) {
+    		mCanvas.drawBitmap(mBitmap, 0, 0, null);
+    	}
+
     	
-    	int lineDrawTime = 600; //millisecs
-    	int timeBetweenLines = 400; //millisecs
+    	//int lineDrawTime = 600; //millisecs
+    	//int timeBetweenLines = 400; //millisecs
     	
+    	int lineDrawTime = 1000; //millisecs
+    	int timeBetweenLines = 500; //millisecs
     	
     	ArrayList<Long> timeList = new ArrayList<Long>();
     	for (int i = 0; i < list.size(); i++) {
@@ -97,12 +112,20 @@ public class TtlView extends View {
     			timeList.add((long)(lineDrawTime + timeBetweenLines) + timeList.get(i-1));
     		}
     		else {
-    			timeList.add((long)(lineDrawTime + timeBetweenLines));
+    			timeList.add((long)(lineDrawTime ));
     		}
     	}
     	
     	int count = 0;
+    	boolean needToBreak = false;
+    	
+    	
     	for (Line line : list) {
+    		if (count < linesDrawn) {
+    			count ++;
+    			continue;
+    		}
+    		
     		
     		
     		int numPoints = line.getPointList().size();
@@ -110,20 +133,49 @@ public class TtlView extends View {
     		Point prev = null;
     		int pointcount = 0;
     		for (Point p : line.getPointList()) {
-    			drawPoint(p, "blue");
-    			if (prev != null) {
-    				if ((double)pointcount / (double) numPoints * (double) lineDrawTime + timeList.get(count) + startTime> System.currentTimeMillis()) {
+    			Log.d("drawingtest", "" + elapsed + ", " + (1 - (double)pointcount / (double)numPoints) * (double)lineDrawTime + ", " + timeList.get(count));
+				if (elapsed  + (1 - (double)pointcount / (double)numPoints) * (double)lineDrawTime > timeList.get(count) ) {
+					
+					needToInv = false;
+					drawPoint(p, "blue");
+						
+	    			if (prev != null) {
+	    				
     					drawLine(prev,p,"blue");
-    				}
-    			}
+    				
+    				//if ((double)pointcount / (double) numPoints * (double) lineDrawTime + timeList.get(count) + startTime> System.currentTimeMillis()) {
+    				//	drawLine(prev,p,"blue");
+    				//}
+	    			}
+
+				}
+				else {
+					needToBreak = true;
+					break;
+				}
     			pointcount++;
     			prev = p;
     		}
+    		if (needToBreak) {
+    			break;
+    		}
     		count++;
     	}
+    	if (count >= linesDrawn) {
+    		linesDrawn = count;
+    	}
+    	
+    	
+    	
     	if (System.currentTimeMillis() > startTime + timeList.get(timeList.size() -1)) {
+    		
     		first_draw = false;
     	}
+    	if (needToInv ) {
+    		Log.d("drawingtest", "need to invalidate");
+    		invalidate();
+    	}
+
     	
     }
     
@@ -201,7 +253,6 @@ public class TtlView extends View {
 
         if (first_draw) {
         	tryDrawChar(paths);
-        	
         }
         
         if (mBitmap != null) {

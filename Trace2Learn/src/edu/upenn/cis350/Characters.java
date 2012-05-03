@@ -85,7 +85,7 @@ public class Characters extends ListActivity {
     private Button drawCharButton;
     private EfficientAdapter adap;
     private static CharDbAdapter mDbHelper;
-    private EditText filterText = null;
+    //private EditText filterText = null;
     
     private String charToDraw;
 
@@ -103,13 +103,14 @@ public class Characters extends ListActivity {
         
         data = buildArray();
 
-        filterText = (EditText) findViewById(R.building_list.search_box);
-        filterText.addTextChangedListener(filterTextWatcher);
+       // filterText = (EditText) findViewById(R.building_list.search_box);
+        //filterText.addTextChangedListener(filterTextWatcher);
         adap = new EfficientAdapter(this, 0);
         setListAdapter(adap);
        
         backButton.setOnClickListener(new OnClickListener() {        
             public void onClick(View v) {
+            	mDbHelper.close();
            	 Intent myIntent = new Intent(v.getContext(), Main.class);
              startActivityForResult(myIntent, 0);
             }
@@ -121,7 +122,8 @@ public class Characters extends ListActivity {
 		           	 Intent myIntent = new Intent(v.getContext(), TouchPaint.class);
 		           	 
 		           	 Log.d("extras", charToDraw);		           	 
-		           	 myIntent.putExtra("charToDraw", charToDraw);		
+		           	 myIntent.putExtra("charToDraw", charToDraw);	
+		           	 mDbHelper.close();
 		             startActivityForResult(myIntent, 2);
             	}
             }
@@ -130,9 +132,16 @@ public class Characters extends ListActivity {
     }
     
     protected void onClose(){
+    	
     	mDbHelper.close();
+    	
     }
     
+    protected void onDestroy() {
+    	mDbHelper.close();
+    	super.onDestroy();
+    	
+    }
     
     private static String[] buildArray(){
     	int count = mDbHelper.fetchAllChars().getCount();

@@ -3,12 +3,7 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical" >	
-	    <EditText android:id="@+building_list/search_box" 
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:hint="search"
-        android:inputType="text"
-        android:maxLines="1"/>    
+
  	    <ListView 
  	        android:id="@+id/android:list" 
  	        android:layout_width="fill_parent"
